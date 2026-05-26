@@ -8,7 +8,8 @@ on:
   repository_dispatch:
     types: [trigger-training]
   workflow_dispatch:
-
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 jobs:
   # ==============================================================================
   # JOB 1: BUILD, TEST & PUSH (The "Artifact Factory")
