@@ -13,6 +13,9 @@ from sklearn.pipeline import Pipeline
 # HELPER FUNCTIONS
 # ------------------------------------------------------------------------------
 
+# Mon super commentaire pour tester le pipeline automatique !
+print("🚀 Lancement de l'entraînement automatique...")
+
 def load_data(url):
     """
     Load dataset from the given URL.
