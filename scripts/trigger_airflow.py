@@ -75,6 +75,7 @@ def trigger_dag(token):
     payload = {
         "logical_date": current_time,
         "conf": {"git_hash": GIT_HASH},
+        # Dans conf, tu rajoutes : "n_estimators": 120, "criterion": "squared_error" ou tout paramètre de ton modèle
         "note": "Triggered via GitHub Actions CI"
     }
     try:
