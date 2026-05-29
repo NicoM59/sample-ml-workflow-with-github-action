@@ -110,8 +110,16 @@ if __name__ == "__main__":
         
         mlflow.log_metric("train_cv_score", best_score)
         mlflow.log_metric("test_score", test_score)
-        mlflow.log_metric("training_time", time.time() - start_time)
+        # ❌ AVANT (On mélangeait tout dans le même chrono)
+        # mlflow.log_metric("training_time", time.time() - start_time)
+        # ✅ APRÈS (On sépare le temps de recherche et le vrai temps du modèle)
+        total_search_time = time.time() - start_time
+        # Scikit-learn garde en mémoire le temps exact du modèle gagnant !
+        best_model_fit_time = model.cv_results_['mean_fit_time'][model.best_index_]
 
+        mlflow.log_metric("total_search_time", total_search_time)  # Ex: 52 secondes
+        mlflow.log_metric("training_time", best_model_fit_time)    # Ex: ~10 secondes
+        
         print("💾 Saving model to MLflow...")
         mlflow.sklearn.log_model(
             sk_model=model.best_estimator_,
