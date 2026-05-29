@@ -103,7 +103,7 @@ if __name__ == "__main__":
         print(f"📊 Train CV Score: {best_score:.4f}")
         print(f"📊 Test Score:     {test_score:.4f}")
 
-        mlflow.log_param("n_estimators", args.n_estimators) #script original: on enregistre la valeur de départ
+        #mlflow.log_param("n_estimators", args.n_estimators) #script original: on enregistre la valeur de départ
         # ✅ APRÈS (On enregistre le paramètre du meilleur modèle trouvé)
         mlflow.log_param("n_estimators", model.best_params_["Random_Forest__n_estimators"])
         mlflow.log_param("criterion", args.criterion)
