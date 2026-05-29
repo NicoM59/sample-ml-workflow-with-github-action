@@ -52,25 +52,55 @@ jobs:
           docker push $IMAGE_ID:${{ github.sha }}
           docker push $IMAGE_ID:latest
 
+  # # ==============================================================================
+#   # JOB 2: TRIGGER AIRFLOW (Optional - if you have the bridge)
+#   # ==============================================================================
+#   trigger-airflow:
+#     needs: build-and-push
+#     if: github.ref == 'refs/heads/main'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4.2.2 # <-- Mise à jour v3 vers v4
+      
+#       - name: Install Python Dependencies
+#         run: pip install requests
+
+#       - name: Trigger Airflow DAG
+#         env:
+#           AIRFLOW_URL: ${{ secrets.AIRFLOW_URL }}
+#           AIRFLOW_USER: ${{ secrets.AIRFLOW_USERNAME }}
+#           AIRFLOW_PASS: ${{ secrets.AIRFLOW_PASSWORD }}
+#           DAG_ID: "github_ec2_ml_training"
+#         run: |
+#           # Run the python script, passing the commit hash as an argument
+#           python scripts/trigger_airflow.py ${{ github.sha }}
+
+# ==============================================================================
+  # JOB 2: CLOUD ML TRAINING (Remplace Airflow)
   # ==============================================================================
-  # JOB 2: TRIGGER AIRFLOW (Optional - if you have the bridge)
-  # ==============================================================================
-  trigger-airflow:
+  run-cloud-training:
     needs: build-and-push
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2 # <-- Mise à jour v3 vers v4
-      
-      - name: Install Python Dependencies
-        run: pip install requests
-
-      - name: Trigger Airflow DAG
+      - name: Run Training in Docker
         env:
-          AIRFLOW_URL: ${{ secrets.AIRFLOW_URL }}
-          AIRFLOW_USER: ${{ secrets.AIRFLOW_USERNAME }}
-          AIRFLOW_PASS: ${{ secrets.AIRFLOW_PASSWORD }}
-          DAG_ID: "github_ec2_ml_training"
+          IMAGE_ID: ${{ secrets.DOCKER_USERNAME }}/sample-ml-workflow
+          # Tes identifiants pour que le conteneur puisse parler à MLflow et AWS
+          MLFLOW_TRACKING_URI: "https://nico59m-mlflow-server-ci-cd-ct-demo.hf.space"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "eu-west-3"
         run: |
-          # Run the python script, passing the commit hash as an argument
-          python scripts/trigger_airflow.py ${{ github.sha }}
+          # 1. GitHub télécharge l'image qu'il vient juste de construire
+          docker pull $IMAGE_ID:latest
+          
+          # 2. On lance le conteneur exactement comme Airflow le faisait !
+          docker run --rm \
+            -e MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+            $IMAGE_ID:latest \
+            python app/train.py --n_estimators 120 --criterion squared_error
+            
