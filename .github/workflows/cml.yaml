@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # <-- Mise à jour v3 vers v4
+        uses: actions/checkout@v4.2.2 # <-- Mise à jour v3 vers v4
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3 # <-- Mise à jour v2 vers v3
+        uses: docker/login-action@v3.3.0 # <-- Mise à jour v2 vers v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
