@@ -79,7 +79,8 @@ if __name__ == "__main__":
     DATA_URL = "https://julie-2-next-resources.s3.eu-west-3.amazonaws.com/full-stack-full-time/linear-regression-ft/californian-housing-market-ft/california_housing_market.csv"
     
     param_grid = {
-        "Random_Forest__n_estimators": [args.n_estimators],
+        #"Random_Forest__n_estimators": [args.n_estimators], #script original: là on test la valeur envoyée par github
+        "Random_Forest__n_estimators": [20, 50, 100, 150],
         "Random_Forest__criterion": [args.criterion]
     }
 
@@ -102,7 +103,9 @@ if __name__ == "__main__":
         print(f"📊 Train CV Score: {best_score:.4f}")
         print(f"📊 Test Score:     {test_score:.4f}")
 
-        mlflow.log_param("n_estimators", args.n_estimators)
+        mlflow.log_param("n_estimators", args.n_estimators) #script original: on enregistre la valeur de départ
+        # ✅ APRÈS (On enregistre le paramètre du meilleur modèle trouvé)
+        mlflow.log_param("n_estimators", model.best_params_["Random_Forest__n_estimators"])
         mlflow.log_param("criterion", args.criterion)
         
         mlflow.log_metric("train_cv_score", best_score)
