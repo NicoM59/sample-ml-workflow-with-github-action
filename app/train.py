@@ -113,7 +113,8 @@ if __name__ == "__main__":
         mlflow.sklearn.log_model(
             sk_model=model.best_estimator_,
             name="model",
-            registered_model_name="random_forest_regressor"
+            registered_model_name="random_forest_regressor",
+            input_example=X_train.head(1)
         )
         
         print("✅ Training Complete.")
