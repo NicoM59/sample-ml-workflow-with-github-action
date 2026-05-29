@@ -112,7 +112,7 @@ if __name__ == "__main__":
         print("💾 Saving model to MLflow...")
         mlflow.sklearn.log_model(
             sk_model=model.best_estimator_,
-            artifact_path="model",
+            name="model",
             registered_model_name="random_forest_regressor"
         )
         
